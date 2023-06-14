@@ -13,8 +13,7 @@ This is the only official repository and is maintained by the community.
  
 ## Example
 
-Do check out & run [example.ts](
-/blob/master/Example/example.ts) to see an example usage of the library.
+Do check out & run [example.ts](Example/example.ts) to see an example usage of the library.
 The script covers most common use cases.
 To run the example script, download or clone the repo and then type the following in a terminal:
 1. ``` cd path/to/Baileys ```
@@ -42,7 +41,9 @@ import makeWASocket from '@whiskeysockets/baileys'
 
 TODO
 
-## Connecting
+## Connecting multi device (recommended)
+
+WhatsApp provides a multi-device API that allows Baileys to be authenticated as a second WhatsApp client by scanning a QR code with WhatsApp on your phone.
 
 ``` ts
 import makeWASocket, { DisconnectReason } from '@whiskeysockets/baileys'
@@ -82,6 +83,12 @@ If the connection is successful, you will see a QR code printed on your terminal
 **Note:** install `qrcode-terminal` using `yarn add qrcode-terminal` to auto-print the QR to the terminal.
 
 **Note:** the code to support the legacy version of WA Web (pre multi-device) has been removed in v5. Only the standard multi-device connection is now supported. This is done as WA seems to have completely dropped support for the legacy version.
+
+## Connecting native mobile api
+
+Baileys also supports the native mobile API, which allows users to authenticate as a standalone WhatsApp client using their phone number.
+
+Run the [example](Example/example.ts) file with ``--mobile`` cli flag to use the native mobile API.
 
 ## Configuring the Connection
 
@@ -240,6 +247,8 @@ export type BaileysEventMap = {
     'chats.update': Partial<Chat>[]
     /** delete chats with given ID */
     'chats.delete': string[]
+    'labels.association': LabelAssociation
+    'labels.edit': Label
     /** presence of contact in a chat updated */
     'presence.update': { id: string, presences: { [participant: string]: PresenceData } }
 
@@ -837,6 +846,21 @@ Of course, replace ``` xyz ``` with an actual ID.
     console.log("joined to: " + response)
     ```
   Of course, replace ``` xxx ``` with invitation code.
+
+- To get list request join
+    ``` ts
+    const response = await sock.groupRequestParticipantsList("abcd-xyz@g.us")
+    console.log(response)
+    ```
+- To approve/reject request join
+    ``` ts
+    const response = await sock.groupRequestParticipantsUpdate(
+        "abcd-xyz@g.us", // id group,
+        ["abcd@s.whatsapp.net", "efgh@s.whatsapp.net"],
+        "approve" // replace this parameter with "reject" 
+    )
+    console.log(response)
+    ```
 
 ## Privacy
 - To get the privacy settings
